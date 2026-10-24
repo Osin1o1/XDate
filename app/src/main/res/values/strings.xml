@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XDate</string>
+    <string name="widget_classic">XDate</string>
+    <string name="widget_tall">XDate Tall</string>
+    <string name="widget_wide">XDate Wide</string>
+    <string name="widget_strip">XDate Strip</string>
+    <string name="widget_month">XDate Month</string>
+    <string name="widget_description">Today\'s date in Nepali, English or both</string>
+    <string name="widget_month_description">This month\'s Nepali or English calendar</string>
+</resources>

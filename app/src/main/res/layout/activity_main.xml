@@ -1,0 +1,102 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- English Date Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/engDayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.3"
+            android:textColor="@color/muted"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:fontFamily="sans-serif-light" />
+
+        <TextView
+            android:id="@+id/engDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="120sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/engMonthYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.2"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-light" />
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="80dp"
+        android:layout_height="0.5dp"
+        android:background="@color/divider"
+        android:layout_marginVertical="8dp" />
+
+    <!-- Nepali Date Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/nepLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="नेपाली मिति"
+            android:textColor="@color/muted"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light" />
+
+        <TextView
+            android:id="@+id/nepDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="120sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/nepMonthYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-light" />
+
+    </LinearLayout>
+
+    <!-- Footer -->
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="made with ♥ by Osin1o1"
+        android:textColor="@color/muted"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-light" />
+
+</LinearLayout>

@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XDate</title>
+<meta name="description" content="Today's Nepali (Bikram Sambat) and English date on your Android home screen. Five widgets, 67 KB, no ads.">
+<meta property="og:title" content="XDate · Nepali date widget">
+<meta property="og:description" content="Today's Nepali and English date on your home screen. Five widgets, 67 KB, no ads.">
+<meta property="og:image" content="logo.webp">
+<meta name="theme-color" content="#fafaf8">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Mukta:wght@400;600;800&family=Noto+Sans+Devanagari:wght@400;700&family=Roboto:wght@300;400;700&display=swap">
+<style>
+:root {
+  --bg: #fafaf8;
+  --fg: #111111;
+  --muted: #6f6f6b;
+  --line: #e4e3de;
+  --card: #ffffff;
+  --accent: #c8102e;
+  --badge-bg: #111111;
+  --badge-fg: #ffffff;
+  --badge-line: #111111;
+  --ui: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
+  --display: "Mukta", "Noto Sans Devanagari", sans-serif;
+  --latin: "Roboto", system-ui, sans-serif;
+  --dev: "Noto Sans Devanagari", "Mukta", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; overflow-x: hidden; background: var(--bg); color: var(--fg); font-family: var(--ui); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.np { font-family: var(--dev); }
+
+/* ---------- nav ---------- */
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; text-decoration: none; letter-spacing: -0.01em; }
+.brand img { width: 30px; height: 30px; border-radius: 8px; }
+.nav-links { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+.nav-links a { text-decoration: none; }
+.nav-links a:hover { color: var(--fg); }
+
+/* ---------- hero ---------- */
+.tilt { transform: perspective(1400px) rotateY(8deg) rotateZ(-4deg); transform-origin: 50% 60%; }
+.hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding: 40px 0 96px; }
+.today-np { font-family: var(--display); font-weight: 800; font-size: clamp(64px, 11vw, 132px); line-height: 0.95; letter-spacing: -0.01em; margin: 0 0 6px; }
+.today-sub { font-family: var(--display); font-size: clamp(20px, 2.6vw, 28px); color: var(--muted); margin: 0; }
+.today-en { font-size: 15px; color: var(--muted); margin: 4px 0 0; letter-spacing: 0.02em; }
+.hero h1 { font-size: clamp(24px, 3vw, 32px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 36px 0 28px; max-width: 22ch; text-wrap: balance; }
+
+.get { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--badge-bg); color: var(--badge-fg);
+  border: 1px solid var(--badge-line); border-radius: 12px;
+  padding: 10px 22px 10px 16px; text-decoration: none; min-width: 210px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.badge:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px #00000080; }
+.badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.badge svg { width: 30px; height: 30px; flex: none; }
+.badge small { display: block; font-size: 11px; letter-spacing: 0.04em; opacity: 0.85; line-height: 1.2; }
+.badge b { display: block; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+.meta { font-size: 13px; color: var(--muted); }
+.meta span + span::before { content: "·"; margin: 0 8px; }
+.qr { display: flex; align-items: center; gap: 12px; margin-top: 28px; font-size: 13px; color: var(--muted); }
+.qr-code { background: #fff; padding: 6px; border-radius: 8px; border: 1px solid var(--line); width: 84px; height: 84px; }
+.qr-code img, .qr-code canvas { width: 72px !important; height: 72px !important; display: block; }
+
+/* ---------- phone ---------- */
+.phone {
+  width: 340px; max-width: 100%; height: 680px; border-radius: 44px; padding: 10px; margin: 0 auto;
+  background: #0b0b0b; box-shadow: 0 1px 0 #ffffff14 inset, 0 40px 80px -30px #00000080, 0 0 0 1px #ffffff10;
+}
+.screen { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; position: relative; display: flex; flex-direction: column; transition: background 0.4s; }
+.status { height: 34px; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 4px 24px 0; font-family: var(--latin); font-size: 12px; font-weight: 700; color: #fff; }
+.home-grid { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 84px; grid-auto-flow: dense; gap: 6px; padding: 12px 10px; align-content: start; }
+.ico { align-self: center; justify-self: center; width: 48px; height: 48px; border-radius: 15px; background: #ffffff2e; }
+.dock { display: flex; justify-content: space-around; padding: 10px 18px 24px; }
+.dock .ico { width: 46px; height: 46px; }
+.wall-day .status { color: #111; }
+.wall-day .ico { background: #00000016; }
+
+.wall-night { background: linear-gradient(165deg, #182231 0%, #2b3748 50%, #48505f 100%); }
+.wall-day { background: linear-gradient(165deg, #e2ecf5 0%, #f5f0e6 55%, #ece6f2 100%); }
+.wall-busy { background:
+  radial-gradient(circle at 20% 25%, #f2d6a2 0 18%, transparent 19%),
+  radial-gradient(circle at 75% 35%, #3f6e8c 0 22%, transparent 23%),
+  radial-gradient(circle at 40% 70%, #e9eef2 0 20%, transparent 21%),
+  linear-gradient(160deg, #7a8f6a, #c9b48a 45%, #5d7a92); }
+.wall-mono { background:
+  radial-gradient(90% 55% at 25% 8%, #ffffff1f, transparent 70%),
+  radial-gradient(80% 50% at 90% 95%, #ffffff12, transparent 70%),
+  linear-gradient(170deg, #2b2b2f 0%, #161618 55%, #0d0d0e 100%); }
+
+/* ---------- widgets (mirrors res/layout/widget_*.xml) ---------- */
+.w { min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 22px; padding: 4px; }
+.span-1x1 { grid-column: span 1; grid-row: span 1; }
+.span-1x2 { grid-column: span 1; grid-row: span 2; }
+.span-2x1 { grid-column: span 2; grid-row: span 1; }
+.span-4x1 { grid-column: span 4; grid-row: span 1; }
+.span-4x2 { grid-column: span 4; grid-row: span 2; }
+.w { --t-main: #ffffff; --t-label: #a8a8a8; --t-sat: #ff8a8a; --t-today-bg: #ffffff; --t-today-fg: #111111; }
+.w.ink-dark { --t-main: #111111; --t-label: #555555; --t-sat: #c8102e; --t-today-bg: #111111; --t-today-fg: #ffffff; }
+.w.ink-light { text-shadow: 0 1px 3px #00000073; }
+.w.bg-soft.ink-light { background: #0000003d; }
+.w.bg-soft.ink-dark { background: #ffffff8c; }
+.w .stack { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
+.day { color: var(--t-main); font-family: var(--latin); font-weight: 700; font-size: 44px; line-height: 1; }
+.day.dev { font-family: var(--dev); font-size: 41px; line-height: 1.08; }
+.lab { color: var(--t-label); font-family: var(--latin); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; line-height: 1.6; white-space: nowrap; }
+.lab.dev { font-family: var(--dev); letter-spacing: .03em; font-size: 12px; text-transform: none; }
+.faint { opacity: .75; }
+.rule { width: 32px; height: 1px; background: var(--t-label); opacity: .6; margin: 4px 0 3px; }
+.split { display: grid; grid-template-columns: 1fr 1px 1fr; align-items: center; width: 100%; }
+.split .vr { height: 46px; background: var(--t-label); opacity: .5; }
+.row { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.row .stack { align-items: flex-start; text-align: left; }
+.strip { display: flex; align-items: baseline; justify-content: center; gap: 4px 8px; flex-wrap: wrap; padding: 0 4px; }
+.strip .big { color: var(--t-main); font-family: var(--dev); font-weight: 700; font-size: 20px; white-space: nowrap; }
+.strip .big.latin { font-family: var(--latin); }
+.strip .dot { color: var(--t-label); }
+.month { width: 100%; height: 100%; padding: 4px 8px; display: grid; grid-template-rows: auto 1fr; gap: 2px; }
+.m-head { display: flex; justify-content: space-between; align-items: baseline; }
+.m-head b { color: var(--t-main); font-family: var(--dev); font-size: 15px; }
+.m-head b.latin { font-family: var(--latin); }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); align-content: space-between; }
+.days span { color: var(--t-main); font-family: var(--dev); font-size: 12px; text-align: center; line-height: 1.15; font-variant-numeric: tabular-nums; padding: 1px 0; }
+.days.latin span { font-family: var(--latin); font-size: 11.5px; }
+.days .hd { color: var(--t-label); font-size: 10.5px; }
+.days .sat { color: var(--t-sat); }
+.days .today { background: var(--t-today-bg); color: var(--t-today-fg); border-radius: 8px; font-weight: 700; text-shadow: none; }
+.days small { display: block; font-family: var(--latin); font-size: 7.5px; color: var(--t-label); line-height: 1; }
+.days .today small { color: var(--t-today-fg); opacity: .7; }
+
+/* ---------- sections ---------- */
+section.block { padding: 96px 0; border-top: 1px solid var(--line); }
+.kicker { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+h2 { font-size: clamp(30px, 4.4vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 16px; text-wrap: balance; }
+.lede { color: var(--muted); font-size: 17px; margin: 0; max-width: 54ch; }
+
+/* ---------- playground ---------- */
+.play { display: grid; grid-template-columns: 360px 1fr; gap: 56px; align-items: center; margin-top: 48px; }
+.controls { display: grid; gap: 28px; }
+.group { display: grid; gap: 10px; }
+.g-label { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.words { display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: baseline; }
+.word { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--muted); font-family: var(--latin); font-weight: 700; font-size: 26px; letter-spacing: .05em; line-height: 1.3; opacity: .45; transition: opacity .15s, color .15s; }
+.word:hover { opacity: .8; }
+.word.dev { font-family: var(--dev); letter-spacing: 0; }
+.word.small { font-size: 17px; letter-spacing: .12em; }
+.word[aria-pressed="true"] { color: var(--fg); opacity: 1; }
+.styles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 520px; }
+.style-btn { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 14px; padding: 12px 4px 10px; display: grid; gap: 8px; justify-items: center; transition: border-color .15s, color .15s; }
+.style-btn:hover { color: var(--fg); }
+.style-btn[aria-pressed="true"] { border-color: var(--fg); color: var(--fg); box-shadow: 0 0 0 1px var(--fg); }
+.style-btn .shape { display: grid; grid-template-columns: repeat(4, 7px); gap: 2px; }
+.style-btn .shape i { display: block; width: 7px; height: 7px; border-radius: 2px; background: var(--line); }
+.style-btn .shape i.on { background: currentColor; }
+.style-btn .nm { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.walls { display: flex; gap: 10px; }
+.wall-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; transition: transform .15s; }
+.wall-btn:hover { transform: scale(1.06); }
+.wall-btn[aria-pressed="true"] { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg) inset; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.hint { font-size: 14px; color: var(--muted); margin: 0; max-width: 46ch; }
+
+/* ---------- numbers ---------- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; margin-top: 48px; }
+.stat { background: var(--bg); padding: 32px 24px; }
+.stat b { display: block; font-size: clamp(36px, 4.4vw, 52px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.stat b small { font-size: 0.45em; letter-spacing: 0; margin-left: 4px; color: var(--muted); font-weight: 600; }
+.stat p { margin: 14px 0 0; color: var(--muted); font-size: 15px; }
+
+/* ---------- closing ---------- */
+.closing { text-align: center; padding: 120px 0 96px; border-top: 1px solid var(--line); }
+.closing .today-np { color: var(--fg); font-size: clamp(56px, 9vw, 104px); margin: 0 0 10px; }
+.closing p { color: var(--muted); margin: 0 0 32px; font-size: 17px; }
+.closing .get { justify-content: center; }
+
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+footer .heart { color: var(--accent); }
+
+.hero-caption { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+#hero-name { min-width: 64px; text-align: right; }
+.hero-dots { display: flex; gap: 6px; }
+.hero-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 4px; background: var(--line); cursor: pointer; transition: width .25s, background .25s; }
+.hero-dots button[aria-pressed="true"] { width: 22px; background: var(--fg); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-w { animation: pop .5s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+  .w { transition: background-color .25s; }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .rise.d1 { animation-delay: .08s; } .rise.d2 { animation-delay: .16s; } .rise.d3 { animation-delay: .24s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 56px; padding-bottom: 72px; }
+  .play { grid-template-columns: 1fr; gap: 40px; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .qr { display: none; }
+}
+@media (max-width: 560px) {
+  .nav-links a.hide-sm { display: none; }
+  section.block { padding: 72px 0; }
+  .styles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .word { font-size: 22px; }
+  .stat { padding: 24px 18px; }
+  .phone { height: 640px; }
+  .play .phone { height: 500px; }
+  .tilt { width: 300px; height: 600px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="logo.webp" alt="" width="30" height="30">XDate</a>
+    <div class="nav-links">
+      <a href="#playground" class="hide-sm">Playground</a>
+      <a href="#" data-repo-link>GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <p class="today-np rise d1" data-today-big>१ कार्तिक</p>
+      <p class="today-sub rise d1" data-today-sub>२०८३ · आइतवार</p>
+      <p class="today-en rise d1" data-today-en>Sunday, 18 October 2026</p>
+      <h1 class="rise d2">The Nepali date, right on your home screen.</h1>
+      <div class="get rise d3">
+        <a class="badge" href="#" data-apk>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M6.6 9.4h10.8v7.4c0 .8-.6 1.4-1.4 1.4h-.9v2.4a1.2 1.2 0 0 1-2.4 0v-2.4h-1.4v2.4a1.2 1.2 0 0 1-2.4 0v-2.4H8c-.8 0-1.4-.6-1.4-1.4V9.4zM4.4 9.2c.66 0 1.2.54 1.2 1.2v4.8a1.2 1.2 0 0 1-2.4 0v-4.8c0-.66.54-1.2 1.2-1.2zm15.2 0c.66 0 1.2.54 1.2 1.2v4.8a1.2 1.2 0 0 1-2.4 0v-4.8c0-.66.54-1.2 1.2-1.2zM15.2 3.9l1.1-1.6a.25.25 0 0 0-.4-.3l-1.2 1.7A6.6 6.6 0 0 0 12 3.1c-1 0-1.9.2-2.7.6L8.1 2a.25.25 0 0 0-.4.3l1.1 1.6A5.4 5.4 0 0 0 6.6 8.4h10.8a5.4 5.4 0 0 0-2.2-4.5zM9.7 6.6a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zm4.6 0a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2z"/></svg>
+          <span><small>DOWNLOAD FOR</small><b>Android</b></span>
+        </a>
+        <div class="meta"><span data-version>Version 1.2</span><span data-size>67 KB</span><span>Android 7+</span></div>
+      </div>
+      <div class="qr rise d3">
+        <div class="qr-code" id="qr" aria-hidden="true"></div>
+        <span>On a computer?<br>Scan to download on your phone.</span>
+      </div>
+    </div>
+
+    <div class="rise d2">
+      <div class="phone tilt" aria-label="XDate widgets on a home screen">
+        <div class="screen wall-mono" id="hero-screen">
+          <div class="status"><span data-clock>9:41</span><span>●●● ▮</span></div>
+          <div class="home-grid" id="hero-grid"></div>
+          <div class="dock"><div class="ico"></div><div class="ico"></div><div class="ico"></div><div class="ico"></div></div>
+        </div>
+      </div>
+      <div class="hero-caption"><span id="hero-name">Classic</span><div class="hero-dots" id="hero-dots" role="group" aria-label="Widget style"></div></div>
+    </div>
+  </header>
+</div>
+
+<section class="block" id="playground">
+  <div class="wrap">
+    <p class="kicker">Playground</p>
+    <h2>Make it yours.</h2>
+    <p class="lede">Five widgets, each in नेपाली, English or both. Try them on different wallpapers. This is the same setup screen you get on your phone, showing today's real date.</p>
+
+    <div class="play">
+      <div class="phone">
+        <div class="screen wall-night" id="play-screen">
+          <div class="status"><span data-clock>9:41</span><span>●●● ▮</span></div>
+          <div class="home-grid" id="play-grid"></div>
+          <div class="dock"><div class="ico"></div><div class="ico"></div><div class="ico"></div><div class="ico"></div></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="group">
+          <span class="g-label">Widget</span>
+          <div class="styles" id="style-btns" role="group" aria-label="Widget style"></div>
+        </div>
+        <div class="group">
+          <span class="g-label">Calendar</span>
+          <div class="words" role="group" aria-label="Calendar">
+            <button class="word dev" data-lang="np" aria-pressed="true">नेपाली</button>
+            <button class="word" data-lang="en" aria-pressed="false">ENGLISH</button>
+            <button class="word" data-lang="both" aria-pressed="false">BOTH</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="g-label">Text</span>
+          <div class="words" role="group" aria-label="Text color">
+            <button class="word small" data-ink="auto" aria-pressed="true">AUTO</button>
+            <button class="word small" data-ink="light" aria-pressed="false">WHITE</button>
+            <button class="word small" data-ink="dark" aria-pressed="false">BLACK</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="g-label">Background</span>
+          <div class="words" role="group" aria-label="Background">
+            <button class="word small" data-bg="none" aria-pressed="true">NONE</button>
+            <button class="word small" data-bg="soft" aria-pressed="false">SOFT</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="g-label">Wallpaper</span>
+          <div class="walls" role="group" aria-label="Wallpaper">
+            <button class="wall-btn wall-night" data-wall="night" aria-pressed="true" aria-label="Dark wallpaper"></button>
+            <button class="wall-btn wall-mono" data-wall="mono" aria-pressed="false" aria-label="Graphite wallpaper"></button>
+            <button class="wall-btn wall-day" data-wall="day" aria-pressed="false" aria-label="Light wallpaper"></button>
+            <button class="wall-btn wall-busy" data-wall="busy" aria-pressed="false" aria-label="Photo wallpaper"></button>
+          </div>
+        </div>
+        <p class="hint">AUTO picks white or black text from your wallpaper. On a busy photo, turn on SOFT for a see-through backing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <p class="kicker">Small and pure</p>
+    <h2>Does one thing. Does it right.</h2>
+    <div class="stats">
+      <div class="stat"><b>67<small>KB</small></b><p>Smaller than one photo on your phone.</p></div>
+      <div class="stat"><b data-verified>2084</b><p>Checked against the official calendar up to this BS year.</p></div>
+      <div class="stat"><b>5</b><p>Widgets, from a single date to the whole month.</p></div>
+      <div class="stat"><b>0</b><p>Ads, trackers or internet access. It works offline.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="closing">
+    <p class="today-np" data-today-big>१ कार्तिक</p>
+    <p>Put today on your home screen.</p>
+    <div class="get">
+      <a class="badge" href="#" data-apk>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M6.6 9.4h10.8v7.4c0 .8-.6 1.4-1.4 1.4h-.9v2.4a1.2 1.2 0 0 1-2.4 0v-2.4h-1.4v2.4a1.2 1.2 0 0 1-2.4 0v-2.4H8c-.8 0-1.4-.6-1.4-1.4V9.4zM4.4 9.2c.66 0 1.2.54 1.2 1.2v4.8a1.2 1.2 0 0 1-2.4 0v-4.8c0-.66.54-1.2 1.2-1.2zm15.2 0c.66 0 1.2.54 1.2 1.2v4.8a1.2 1.2 0 0 1-2.4 0v-4.8c0-.66.54-1.2 1.2-1.2zM15.2 3.9l1.1-1.6a.25.25 0 0 0-.4-.3l-1.2 1.7A6.6 6.6 0 0 0 12 3.1c-1 0-1.9.2-2.7.6L8.1 2a.25.25 0 0 0-.4.3l1.1 1.6A5.4 5.4 0 0 0 6.6 8.4h10.8a5.4 5.4 0 0 0-2.2-4.5zM9.7 6.6a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zm4.6 0a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2z"/></svg>
+        <span><small>DOWNLOAD FOR</small><b>Android</b></span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <span>made with <span class="heart">♥</span> by <a href="https://github.com/Osin1o1">Osin1o1</a> · accurate till <span data-verified>2084</span> BS</span>
+    <a href="#" data-repo-link>Source on GitHub</a>
+  </footer>
+</div>
+
+<script src="bs.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function () {
+  // GitHub repo that hosts the releases. On <user>.github.io/<repo> it is read from the address,
+  // so the page keeps working when served from another account. Otherwise this fallback is used.
+  var FALLBACK_REPO = 'Osin1o1/XDate';
+
+  function repo() {
+    var host = location.hostname.match(/^([^.]+)\.github\.io$/i);
+    if (!host) return FALLBACK_REPO;
+    var first = location.pathname.split('/')[1];
+    return host[1] + '/' + (first && first.indexOf('.') < 0 ? first : host[1] + '.github.io');
+  }
+  var REPO = repo();
+  var APK = 'https://github.com/' + REPO + '/releases/latest/download/XDate.apk';
+
+  document.querySelectorAll('[data-apk]').forEach(function (a) { a.href = APK; });
+  document.querySelectorAll('[data-repo-link]').forEach(function (a) { a.href = 'https://github.com/' + REPO; });
+
+  // Version and size of the latest release, when GitHub answers.
+  fetch('https://api.github.com/repos/' + REPO + '/releases/latest')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (rel) {
+      if (!rel) return;
+      document.querySelector('[data-version]').textContent = 'Version ' + rel.tag_name.replace(/^v/, '');
+      var apk = (rel.assets || []).filter(function (a) { return a.name === 'XDate.apk'; })[0];
+      if (apk) document.querySelector('[data-size]').textContent = Math.round(apk.size / 1024) + ' KB';
+    })
+    .catch(function () {});
+
+  try { new QRCode(document.getElementById('qr'), { text: APK, width: 144, height: 144, colorDark: '#111111', colorLight: '#ffffff' }); }
+  catch (e) { var q = document.querySelector('.qr'); if (q) q.style.display = 'none'; }
+
+  // ---------- today's date (same table and anchor as NepaliDateConverter.kt) ----------
+  var DIG = '०१२३४५६७८९';
+  function np(n) { return String(n).replace(/\d/g, function (d) { return DIG[d]; }); }
+  var EN_M = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var EN_D = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  function toBS(date) {
+    var n = Math.round((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(1943, 3, 14)) / 864e5);
+    if (n < 0) return null;
+    for (var y = 0; y < BS.days.length; y++) {
+      for (var m = 0; m < 12; m++) {
+        if (n < BS.days[y][m]) return { year: BS.firstYear + y, month: m + 1, day: n + 1 };
+        n -= BS.days[y][m];
+      }
+    }
+    return null;
+  }
+
+  var now = new Date();
+  var bs = toBS(now) || { year: 2083, month: 7, day: 1 };
+  var T = {
+    np: { day: bs.day, month: BS.months[bs.month - 1], year: bs.year, wd: BS.weekdays[now.getDay()] },
+    en: { day: now.getDate(), month: EN_M[now.getMonth()].slice(0, 3), monthLong: EN_M[now.getMonth()],
+          year: now.getFullYear(), wd: EN_D[now.getDay()], wdShort: EN_D[now.getDay()].slice(0, 3) }
+  };
+
+  document.querySelectorAll('[data-today-big]').forEach(function (el) { el.textContent = np(T.np.day) + ' ' + T.np.month; });
+  document.querySelector('[data-today-sub]').textContent = np(T.np.year) + ' · ' + T.np.wd;
+  document.querySelector('[data-today-en]').textContent = T.en.wd + ', ' + T.en.day + ' ' + T.en.monthLong + ' ' + T.en.year;
+  document.querySelectorAll('[data-verified]').forEach(function (el) { el.textContent = BS.verifiedUntil; });
+
+  function tick() {
+    var d = new Date();
+    var t = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+    document.querySelectorAll('[data-clock]').forEach(function (el) { el.textContent = t; });
+  }
+  tick(); setInterval(tick, 30000);
+
+  // ---------- widget renderer (mirrors WidgetRenderer.kt) ----------
+  var STYLES = [
+    { id: 'classic', name: 'Classic', span: 'span-1x1', cols: 1, rows: 1 },
+    { id: 'tall', name: 'Tall', span: 'span-1x2', cols: 1, rows: 2 },
+    { id: 'wide', name: 'Wide', span: 'span-2x1', cols: 2, rows: 1 },
+    { id: 'strip', name: 'Strip', span: 'span-4x1', cols: 4, rows: 1 },
+    { id: 'month', name: 'Month', span: 'span-4x2', cols: 4, rows: 2 }
+  ];
+  function styleOf(id) { return STYLES.filter(function (s) { return s.id === id; })[0]; }
+
+  function npDay() { return '<div class="day dev">' + np(T.np.day) + '</div>'; }
+  function enDay() { return '<div class="day">' + T.en.day + '</div>'; }
+  function npLab(t, extra) { return '<div class="lab dev' + (extra ? ' ' + extra : '') + '">' + t + '</div>'; }
+  function enLab(t, extra) { return '<div class="lab' + (extra ? ' ' + extra : '') + '">' + t + '</div>'; }
+
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+
+  function monthGrid(lang) {
+    var latin = lang === 'en', head, start, len, todayN, adOf = null;
+    var heads = latin ? ['S','M','T','W','T','F','S'] : ['आ','सो','मं','बु','बि','शु','श'];
+    if (latin) {
+      var first = new Date(now.getFullYear(), now.getMonth(), 1);
+      start = first.getDay();
+      len = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      todayN = T.en.day;
+      var b1 = toBS(first), b2 = toBS(addDays(first, len - 1));
+      head = '<b class="latin">' + (T.en.monthLong + ' ' + T.en.year).toUpperCase() + '</b><span class="lab">' +
+        (b1 && b2 ? BS.monthsEn[b1.month - 1] + ' – ' + BS.monthsEn[b2.month - 1] : '') + '</span>';
+    } else {
+      var bsFirst = addDays(now, -(T.np.day - 1));
+      start = bsFirst.getDay();
+      len = BS.days[bs.year - BS.firstYear][bs.month - 1];
+      todayN = T.np.day;
+      var last = addDays(bsFirst, len - 1);
+      head = '<b>' + T.np.month + ' ' + np(T.np.year) + '</b><span class="lab">' +
+        (lang === 'both' ? EN_M[bsFirst.getMonth()].slice(0, 3) + ' – ' + EN_M[last.getMonth()].slice(0, 3) + ' ' + last.getFullYear() : '') + '</span>';
+      if (lang === 'both') adOf = function (d) { return addDays(bsFirst, d - 1).getDate(); };
+    }
+    var html = heads.map(function (h, i) { return '<span class="hd' + (i === 6 ? ' sat' : '') + '">' + h + '</span>'; }).join('');
+    for (var b = 0; b < start; b++) html += '<span></span>';
+    for (var d = 1; d <= len; d++) {
+      var col = (start + d - 1) % 7, cls = d === todayN ? 'today' : (col === 6 ? 'sat' : '');
+      html += '<span class="' + cls + '">' + (latin ? d : np(d)) + (adOf ? '<small>' + adOf(d) + '</small>' : '') + '</span>';
+    }
+    return '<div class="month"><div class="m-head">' + head + '</div><div class="days' + (latin ? ' latin' : '') + '">' + html + '</div></div>';
+  }
+
+  function widgetInner(style, lang) {
+    var n = T.np, e = T.en;
+    switch (style) {
+      case 'classic':
+        if (lang === 'np') return '<div class="stack">' + npDay() + npLab(n.month) + '</div>';
+        if (lang === 'en') return '<div class="stack">' + enDay() + enLab(e.month) + '</div>';
+        return '<div class="stack">' + npDay() + npLab(n.month) + '<div class="rule"></div>' + enLab(e.day + ' ' + e.month) + '</div>';
+      case 'tall':
+        if (lang === 'np') return '<div class="stack">' + npLab(n.wd) + npDay() + npLab(n.month) + npLab(np(n.year), 'faint') + '</div>';
+        if (lang === 'en') return '<div class="stack">' + enLab(e.wd) + enDay() + enLab(e.month) + enLab(e.year, 'faint') + '</div>';
+        return '<div class="stack">' + npLab(n.wd) + npDay() + npLab(n.month) + npLab(np(n.year), 'faint') + '<div class="rule"></div>' + enLab(e.wdShort + ' ' + e.day + ' ' + e.month) + '</div>';
+      case 'wide':
+        if (lang === 'np') return '<div class="row">' + npDay() + '<div class="stack">' + npLab(n.month + ' ' + np(n.year)) + npLab(n.wd, 'faint') + '</div></div>';
+        if (lang === 'en') return '<div class="row">' + enDay() + '<div class="stack">' + enLab(e.monthLong + ' ' + e.year) + enLab(e.wd, 'faint') + '</div></div>';
+        return '<div class="split"><div class="stack">' + npDay() + npLab(n.month) + '</div><div class="vr"></div><div class="stack">' + enDay() + enLab(e.month) + '</div></div>';
+      case 'strip':
+        var dot = '<span class="dot">·</span>', npd = np(n.day) + ' ' + n.month + ' ' + np(n.year);
+        if (lang === 'np') return '<div class="strip"><span class="big">' + npd + '</span>' + dot + '<span class="lab dev">' + n.wd + '</span></div>';
+        if (lang === 'en') return '<div class="strip"><span class="big latin">' + e.day + ' ' + e.monthLong + ' ' + e.year + '</span>' + dot + '<span class="lab">' + e.wd + '</span></div>';
+        return '<div class="strip"><span class="big">' + npd + '</span>' + dot + '<span class="lab dev">' + n.wd + '</span>' + dot + '<span class="lab">' + e.day + ' ' + e.month + ' ' + e.year + '</span></div>';
+      case 'month':
+        return monthGrid(lang);
+    }
+  }
+
+  function widget(style, lang, ink, bg) {
+    return '<div class="w ' + styleOf(style).span + ' ink-' + ink + ' bg-' + bg + '">' + widgetInner(style, lang) + '</div>';
+  }
+  function icons(n) { var h = ''; while (n-- > 0) h += '<div class="ico"></div>'; return h; }
+
+  // ---------- hero home screen: one Nepali widget at a time ----------
+  var heroIndex = 0, heroTimer = null;
+  var heroDots = document.getElementById('hero-dots');
+  heroDots.innerHTML = STYLES.map(function (s, i) {
+    return '<button data-hero="' + i + '" aria-label="' + s.name + '"></button>';
+  }).join('');
+
+  function showHero(i) {
+    heroIndex = i;
+    var s = STYLES[i];
+    document.getElementById('hero-grid').innerHTML =
+      widget(s.id, 'np', 'light', 'none').replace('class="w ', 'class="w hero-w ') + icons(20 - s.cols * s.rows);
+    document.getElementById('hero-name').textContent = s.name;
+    heroDots.querySelectorAll('button').forEach(function (b, j) { b.setAttribute('aria-pressed', String(j === i)); });
+  }
+  function startHero() {
+    clearInterval(heroTimer);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    heroTimer = setInterval(function () { showHero((heroIndex + 1) % STYLES.length); }, 3200);
+  }
+  heroDots.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    showHero(+b.dataset.hero);
+    startHero();
+  });
+  showHero(0);
+  startHero();
+
+  // ---------- playground ----------
+  var state = { style: 'classic', lang: 'np', ink: 'auto', bg: 'none', wall: 'night' };
+
+  document.getElementById('style-btns').innerHTML = STYLES.map(function (s) {
+    var cells = '';
+    for (var r = 0; r < 2; r++) for (var c = 0; c < 4; c++) cells += '<i class="' + (r < s.rows && c < s.cols ? 'on' : '') + '"></i>';
+    return '<button class="style-btn" data-style="' + s.id + '" aria-pressed="false"><span class="shape">' + cells +
+      '</span><span class="nm">' + s.name + '</span></button>';
+  }).join('');
+
+  function render() {
+    // AUTO follows the wallpaper: black text on light wallpapers, white elsewhere.
+    var ink = state.ink !== 'auto' ? state.ink : (state.wall === 'day' ? 'dark' : 'light');
+    var s = styleOf(state.style);
+    var screen = document.getElementById('play-screen');
+    screen.className = 'screen wall-' + state.wall;
+    document.getElementById('play-grid').innerHTML = icons(4) + widget(state.style, state.lang, ink, state.bg) + icons(20 - s.cols * s.rows);
+    ['style', 'lang', 'ink', 'bg', 'wall'].forEach(function (k) {
+      document.querySelectorAll('[data-' + k + ']').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[k] === state[k])); });
+    });
+  }
+
+  document.querySelector('.controls').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    ['style', 'lang', 'ink', 'bg', 'wall'].forEach(function (k) { if (b.dataset[k]) state[k] = b.dataset[k]; });
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

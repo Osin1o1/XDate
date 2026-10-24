@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Transparent area: the user's wallpaper shows through behind the live preview -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="200dp">
+
+        <FrameLayout
+            android:id="@+id/previewHost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/config_panel"
+        android:orientation="vertical"
+        android:paddingHorizontal="28dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/styleName"
+            style="@style/ConfigLabel"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:textSize="13sp" />
+
+        <TextView
+            style="@style/ConfigLabel"
+            android:text="Calendar" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/langNp"
+                style="@style/ConfigOption"
+                android:text="नेपाली" />
+
+            <TextView
+                android:id="@+id/langEn"
+                style="@style/ConfigOption"
+                android:text="ENGLISH" />
+
+            <TextView
+                android:id="@+id/langBoth"
+                style="@style/ConfigOption"
+                android:text="BOTH" />
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/ConfigLabel"
+            android:text="Text" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/inkAuto"
+                style="@style/ConfigOption.Small"
+                android:text="AUTO" />
+
+            <TextView
+                android:id="@+id/inkLight"
+                style="@style/ConfigOption.Small"
+                android:text="WHITE" />
+
+            <TextView
+                android:id="@+id/inkDark"
+                style="@style/ConfigOption.Small"
+                android:text="BLACK" />
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/ConfigLabel"
+            android:text="Background" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp">
+
+            <TextView
+                android:id="@+id/bgNone"
+                style="@style/ConfigOption.Small"
+                android:text="NONE" />
+
+            <TextView
+                android:id="@+id/bgSoft"
+                style="@style/ConfigOption.Small"
+                android:text="SOFT" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/config_button"
+            android:gravity="center"
+            android:letterSpacing="0.2"
+            android:text="ADD WIDGET"
+            android:textColor="@color/app_bg"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</LinearLayout>

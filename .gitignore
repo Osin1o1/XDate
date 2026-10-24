@@ -1,0 +1,21 @@
+# Built files
+/build/
+/app/build/
+/.gradle/
+
+# IDE
+/.idea/
+*.iml
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keystore
+*.jks
+*.keystore
+keystore.properties
+
+# Built APKs (published through GitHub Releases)
+*.apk

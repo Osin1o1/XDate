@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="6dp">
+
+    <LinearLayout
+        android:id="@+id/colA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/dayA" style="@style/WidgetDay" android:text="१" />
+        <TextView android:id="@+id/labelA" style="@style/WidgetLabel" android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- Divider between the two dates; transparent spacer when showing one calendar -->
+    <TextView
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="44dp"
+        android:layout_marginHorizontal="12dp" />
+
+    <LinearLayout
+        android:id="@+id/colB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/dayB" style="@style/WidgetDay" android:visibility="gone" />
+        <TextView android:id="@+id/labelB" style="@style/WidgetLabel" android:textColor="@color/widget_preview" android:textSize="13sp" android:text="कार्तिक २०८३" />
+        <TextView android:id="@+id/subB" style="@style/WidgetLabel" android:text="आइतवार" />
+
+    </LinearLayout>
+
+</LinearLayout>

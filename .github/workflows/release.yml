@@ -1,0 +1,63 @@
+# Builds the signed release APK and publishes it as a GitHub Release.
+# Trigger: push a tag matching the app's versionName, e.g.  git tag v1.2 && git push origin v1.2
+#
+# Required repository secrets:
+#   KEYSTORE_BASE64    base64 of the release .jks  (base64 -w0 ~/.android/xdate-release.jks)
+#   KEYSTORE_PASSWORD  store password
+#   KEY_ALIAS          key alias (xdate)
+#   KEY_PASSWORD       key password
+name: Release APK
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Check tag matches versionName
+        run: |
+          version=$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' app/build.gradle.kts)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match versionName $version in app/build.gradle.kts"
+            exit 1
+          fi
+
+      - name: Restore signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          {
+            echo "storeFile=$RUNNER_TEMP/release.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > keystore.properties
+
+      - name: Test and build
+        run: ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Fixed name so the website's ".../releases/latest/download/XDate.apk" link always works.
+          cp app/build/outputs/apk/release/app-release.apk XDate.apk
+          gh release create "$GITHUB_REF_NAME" XDate.apk --title "XDate $GITHUB_REF_NAME" --generate-notes

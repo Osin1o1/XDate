@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_bg">#000000</color>
+    <color name="app_fg">#F2F2F2</color>
+    <color name="widget_preview">#FFFFFF</color>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="6dp">
+
+    <TextView
+        android:id="@+id/strip"
+        style="@style/WidgetText"
+        android:gravity="center"
+        android:letterSpacing="0.05"
+        android:maxLines="2"
+        android:text="१ कार्तिक २०८३  ·  आइतवार"
+        android:textColor="@color/widget_preview"
+        android:textSize="12sp" />
+
+</LinearLayout>
