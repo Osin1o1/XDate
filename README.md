@@ -28,21 +28,6 @@ Release builds need a `keystore.properties` in the repo root (see `keystore.prop
 ./gradlew assembleRelease     # app/build/outputs/apk/release/app-release.apk
 ```
 
-Back up the keystore and its passwords. Updates must be signed with the same key, or they won't install over the old version.
-
-## Releasing
-
-Pushing a version tag builds, signs and publishes `XDate.apk` as a GitHub Release ([release.yml](.github/workflows/release.yml)).
-
-1. Bump `versionCode` and `versionName` in `app/build.gradle.kts` and commit.
-2. Tag and push. The tag must match `versionName`:
-
-   ```bash
-   git tag v1.2
-   git push origin main v1.2
-   ```
-
-The workflow needs four repository secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.
 
 ## Project layout
 
