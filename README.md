@@ -1,80 +1,59 @@
-# XDate 📅
+# XDate
 
-A minimal Android app that shows today's date on your home screen widget — both English and Nepali (Bikram Sambat).
+Today's Nepali (Bikram Sambat) date on your Android home screen. Small, offline, no ads.
 
-**Download:** https://osin1o1.github.io/XDate/ (latest APK: [XDate.apk](https://github.com/Osin1o1/XDate/releases/latest/download/XDate.apk))
+**[Website](https://osin1o1.github.io/XDate/)** · **[Download APK](https://github.com/Osin1o1/XDate/releases/latest/download/XDate.apk)** · Android 7.0+
 
 ## Features
-- **Five widgets**: Classic 1×1, Tall 1×2, Wide 2×1, Strip 4×1, Month 4×2
-- **Nepali, English or both** in every widget, chosen in the setup screen (long-press → Reconfigure on Android 12+)
-- **Readable on any wallpaper**: AUTO picks white or black text from the wallpaper; WHITE/BLACK and a SOFT background are optional
-- **Accurate dates**: BS calendar data for 2000–2100, matching the published Panchang up to 2084 BS (`NepaliDateConverter.kt`)
-- **App** displays both English and Nepali full dates and follows system dark/light mode
-- **Tiny size**: no AndroidX libraries, R8 minified, about 70 KB
-- **Battery friendly**: redraws at midnight, with a 30-minute system refresh as backup
 
-Back up `keystore.properties` and the keystore file it points to. Every future update must be signed with the same key, or it won't install over the old version.
-
-## Publishing a release
-
-GitHub Actions (`.github/workflows/release.yml`) builds, signs and publishes the APK when a version tag is pushed:
-
-1. Bump `versionCode` and `versionName` in `app/build.gradle.kts`, then commit.
-2. `git tag v1.2 && git push origin main v1.2` (the tag must match `versionName`).
-
-The workflow needs these repository secrets: `KEYSTORE_BASE64` (`base64 -w0 your-key.jks`), `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
-The website lives in `docs/` and is served by GitHub Pages from the `main` branch.
-
-## Release build
-
-The project is wired for production signing through a `keystore.properties` file in the repo root.
-Release builds will fail until that file is present and complete.
-
-Create the file with these keys:
-
-```properties
-storeFile=/absolute/path/to/upload-key.jks
-storePassword=yourStorePassword
-keyAlias=yourKeyAlias
-keyPassword=yourKeyPassword
-```
-
-Then build a release artifact:
-
-```bash
-./gradlew assembleRelease
-./gradlew bundleRelease
-```
-
-Use debug builds for local testing:
-
-```bash
-./gradlew assembleDebug
-```
+- **Five widgets**: Classic 1×1, Tall 1×2, Wide 2×1, Strip 4×1 and Month 4×2
+- **नेपाली, English or both**, chosen per widget (long-press → Reconfigure on Android 12+)
+- **Readable on any wallpaper**: AUTO picks white or black text; a SOFT background is optional
+- **Accurate**: BS calendar data for 2000–2100, checked against the official calendar up to 2084 BS
+- **Tiny**: about 70 KB, no libraries, no internet permission
+- **Always current**: redraws at midnight, with a 30-minute system refresh as backup
 
 ## Build
 
+Needs JDK 17 and the Android SDK.
+
 ```bash
-# Set Android SDK path (if not already set)
-export ANDROID_HOME=~/android-sdk
-
-# Build debug APK for local testing
-./gradlew assembleDebug
-
-# APK output: app/build/outputs/apk/debug/app-debug.apk
+./gradlew testDebugUnitTest   # date conversion tests
+./gradlew assembleDebug       # installs as "XDate Share", next to the release app
 ```
 
-## Shipping checklist
+Release builds need a `keystore.properties` in the repo root (see `keystore.properties.example`):
 
-- Replace the fallback debug signing by adding your real upload keystore.
-- Install the release APK on a device and confirm the launcher app and widget both open.
-- Test on an Android 7.0+ phone, since `minSdk 24` is required.
+```bash
+./gradlew assembleRelease     # app/build/outputs/apk/release/app-release.apk
+```
 
-## Tech Stack
-- Kotlin
-- Material Design 3
-- AndroidX AppCompat
-- Native AppWidgetProvider
+Back up the keystore and its passwords. Updates must be signed with the same key, or they won't install over the old version.
+
+## Releasing
+
+Pushing a version tag builds, signs and publishes `XDate.apk` as a GitHub Release ([release.yml](.github/workflows/release.yml)).
+
+1. Bump `versionCode` and `versionName` in `app/build.gradle.kts` and commit.
+2. Tag and push. The tag must match `versionName`:
+
+   ```bash
+   git tag v1.2
+   git push origin main v1.2
+   ```
+
+The workflow needs four repository secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.
+
+## Project layout
+
+| Path | What |
+|---|---|
+| `app/.../NepaliDateConverter.kt` | AD → BS conversion and the month-length table |
+| `app/.../WidgetRenderer.kt` | Draws every widget style |
+| `app/.../DateWidgetProvider.kt` | Widget providers and the midnight refresh |
+| `docs/` | Website, served by GitHub Pages |
+| `scripts/gen-site-calendar.py` | Copies the calendar table into `docs/bs.js`; run it after changing the table |
 
 ## License
+
 MIT
